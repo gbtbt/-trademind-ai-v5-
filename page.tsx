@@ -1,0 +1,1 @@
+export default function D(){ return (<main style={{padding:40,maxWidth:800,margin:'0 auto'}}><h1>Дашборд</h1><p>Після Supabase тут будуть твої реальні угоди.</p><a href='/' style={{color:'#22c55e'}}>← На головну</a></main>); }

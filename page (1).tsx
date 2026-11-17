@@ -1,0 +1,1 @@
+export default function J(){ return (<main style={{padding:40,maxWidth:800,margin:'0 auto'}}><h1>Журнал</h1><p>Угоди зберігаються в Supabase, таблиця trades, з RLS.</p><a href='/' style={{color:'#22c55e'}}>← На головну</a></main>); }

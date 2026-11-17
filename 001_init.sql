@@ -1,0 +1,13 @@
+create table if not exists public.profiles (id uuid primary key references auth.users(id) on delete cascade, email text, full_name text, avatar_url text, trading_experience text, risk_tolerance text, default_balance numeric default 10000, timezone text default 'Europe/Kyiv', role text default 'user' check (role in ('user','owner')), created_at timestamptz default now(), updated_at timestamptz default now());
+create table if not exists public.trades (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, pair text not null, direction text not null check (direction in ('LONG','SHORT')), entry_price numeric not null, exit_price numeric, quantity numeric not null, fees numeric default 0, entry_date timestamptz, exit_date timestamptz, notes text, created_at timestamptz default now());
+create table if not exists public.subscriptions (id uuid primary key default gen_random_uuid(), user_id uuid not null references auth.users(id) on delete cascade, plan text default 'FREE' check (plan in ('FREE','PRO','AI_PRO')), status text default 'active', current_period_end timestamptz, created_at timestamptz default now());
+create table if not exists public.content (id uuid primary key default gen_random_uuid(), key text unique not null, value text, updated_by uuid references auth.users(id), updated_at timestamptz default now());
+alter table public.profiles enable row level security;
+alter table public.trades enable row level security;
+alter table public.subscriptions enable row level security;
+alter table public.content enable row level security;
+create policy "own profile" on public.profiles for all using (auth.uid() = id) with check (auth.uid() = id);
+create policy "own trades" on public.trades for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "own subs" on public.subscriptions for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+create policy "content read" on public.content for select using (true);
+create policy "content owner write" on public.content for all using (exists (select 1 from public.profiles where id = auth.uid() and role='owner')) with check (exists (select 1 from public.profiles where id = auth.uid() and role='owner'));
